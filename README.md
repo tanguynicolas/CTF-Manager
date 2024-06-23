@@ -2,11 +2,9 @@
 
 A manager for your CTFs. Manage teams, flags and their validation.
 
-Team dasboard              |  API docs
-:-------------------------:|:-------------------------:
-![](docs/team_dashboard.png)  |  ![](docs/api_docs.png)
-
-## Work In Progress
+  Team dasboard               |  API docs
+:----------------------------:|:----------------------:
+ ![](docs/team_dashboard.png) | ![](docs/api_docs.png)
 
 ## Configuration
 
