@@ -1,0 +1,7 @@
+__pycache__/
+.venv
+.envrc
+.env
+docker-compose.yml
+README.md
+dashboards
