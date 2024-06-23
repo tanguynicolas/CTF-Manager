@@ -1,5 +1,10 @@
 # CTF Manager
 
+![GitHub Release](https://img.shields.io/github/release/tterb/PlayMusic.svg?style=flat)
+![pipeline](https://github.com/tanguynicolas/CTF-Manager/actions/workflows/container.yml/badge.svg)
+[![PR's Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
+[![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
+
 A manager for your CTFs. Manage teams, flags and their validation.
 
   Team dasboard               |  API docs
