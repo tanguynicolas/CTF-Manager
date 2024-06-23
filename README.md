@@ -29,6 +29,7 @@ If you use my full setup, with Docker Compose, you need to create `.env` file (t
 ```shell
 MONGODB_USERNAME=""
 MONGODB_PASSWORD=""
+MONGODB_URL=""
 
 EXTERNAL_IP=""
 

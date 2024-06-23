@@ -6,7 +6,7 @@ services:
     container_name: mongodb
     restart: always
     ports:
-      - 27017:27017
+      - "27017:27017" # to access with MongoDB Compass
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USERNAME}"
       MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
@@ -31,6 +31,33 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
+  api:
+    image: tanguynicolas/ctf-manager:latest
+    pull_policy: always
+    restart: unless-stopped
+    expose:
+      - 80
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - KAFKA_ENABLE=true
+      - KAFKA_HOSTNAME=kafka
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=ctfmanager
+    depends_on:
+      - db
+      - kafka
+
+  lb:
+    image: tanguynicolas/ctf-manager-lb:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - 80:80
+    environment:
+      - BEARER_TOKEN=${BEARER_TOKEN}
+    depends_on:
+      - api
+
   pdc-agent:
     image: grafana/pdc-agent
     restart: always
@@ -42,6 +69,8 @@ services:
       - "${GCLOUD_HOSTED_GRAFANA_ID}"
       - "-cluster"
       - "${GCLOUD_PDC_CLUSTER}"
+    depends_on:
+      - db
 
 volumes:
   mongodb_data:
