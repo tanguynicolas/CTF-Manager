@@ -1,0 +1,48 @@
+name: ctfmanager
+
+services:
+  db:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
+    volumes:
+      - mongodb_data:/data/db
+
+  kafka:
+    image: bitnami/kafka
+    container_name: kafka
+    restart: always
+    ports:
+      - "9094:9094" # for external access
+      # "9092:9092" # for internal access, no need to expose externally
+    volumes:
+      - kafka_data:/bitnami
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://0.0.0.0:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://${EXTERNAL_IP}:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+  pdc-agent:
+    image: grafana/pdc-agent
+    restart: always
+    container_name: pdc-agent
+    command:
+      - "-token"
+      - "${GCLOUD_PDC_SIGNING_TOKEN}"
+      - "-gcloud-hosted-grafana-id"
+      - "${GCLOUD_HOSTED_GRAFANA_ID}"
+      - "-cluster"
+      - "${GCLOUD_PDC_CLUSTER}"
+
+volumes:
+  mongodb_data:
+  kafka_data:

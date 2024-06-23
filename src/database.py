@@ -1,18 +1,14 @@
-# root of the project, which inits the FastAPI app
+from motor.motor_asyncio import AsyncIOMotorClient
 
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from beanie import init_beanie
 
-app = FastAPI(title="CTF Manager")
+from .config import database_settings
+from .models import Team
 
-@app.get("/", include_in_schema=False)
-async def docs_redirect():
-    return RedirectResponse(url='/docs')
+# Call this from within your event loop to get beanie setup.
+async def init():
+    # Create Motor client
+    client = AsyncIOMotorClient(database_settings.url)
 
-@app.get("/livez")
-def alive():
-    return("I'm alive!")
-
-@app.get("/info")
-def info():
-    return {"Info": "No info"}
+    # Init beanie with the document class
+    await init_beanie(database=client[database_settings.db_name], document_models=[Team])

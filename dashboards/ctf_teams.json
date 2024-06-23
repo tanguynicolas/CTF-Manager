@@ -1,0 +1,481 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 14,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-mongodb-datasource",
+        "uid": "fdpk144yojr40e"
+      },
+      "description": "Total points earned (score) by each team",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "team"
+            },
+            "properties": [
+              {
+                "id": "displayName"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "maxPoints"
+            },
+            "properties": [
+              {
+                "id": "max"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^earnedPoints$/",
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mongodb-datasource",
+            "uid": "fdpk144yojr40e"
+          },
+          "parsedQuery": "ctf_manager.teams.aggregate([{\"$unwind\":{\"path\":\"$flags\",\"preserveNullAndEmptyArrays\":true}},{\"$group\":{\"_id\":\"$name\",\"earnedPoints\":{\"$sum\":{\"$cond\":[{\"$eq\":[\"$flags.found\",true]},\"$flags.points\",0]}},\"maxPoints\":{\"$sum\":\"$flags.points\"}}},{\"$project\":{\"_id\":0,\"team\":\"$_id\",\"earnedPoints\":1,\"maxPoints\":1}}])",
+          "query": "ctf_manager.teams.aggregate([\n  // Décompose le tableau \"flags\" pour traiter chaque élément individuellement\n  { $unwind: { path: \"$flags\", preserveNullAndEmptyArrays: true } },\n  // Regroupe par équipe pour calculer earnedPoints et maxPoints\n  { $group: {\n    _id: \"$name\",\n    earnedPoints: { \n      $sum: { \n        $cond: [{ $eq: [\"$flags.found\", true] }, \"$flags.points\", 0] \n      }\n    },\n    maxPoints: {\n      $sum: \"$flags.points\"\n    }\n  }},\n  // Renomme le champ _id en \"team\" pour plus de clarté\n  { $project: {\n    _id: 0,\n    team: \"$_id\",\n    earnedPoints: 1,\n    maxPoints: 1\n  }}\n])",
+          "queryType": "query",
+          "refId": "A"
+        }
+      ],
+      "title": "General Scores",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "team"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "maxPoints"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "earnedPoints"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mongodb-datasource",
+        "uid": "fdpk144yojr40e"
+      },
+      "description": "All flags found by teams",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "transparent",
+            "mode": "shades"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "applyToRow": false,
+              "mode": "basic",
+              "type": "color-background",
+              "wrapText": false
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "fieldMinMax": false,
+          "mappings": [
+            {
+              "options": {
+                "match": "true",
+                "result": {
+                  "color": "purple",
+                  "index": 0,
+                  "text": "found"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "match": "false",
+                "result": {
+                  "color": "light-blue",
+                  "index": 1,
+                  "text": "not found"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bool"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mongodb-datasource",
+            "uid": "fdpk144yojr40e"
+          },
+          "parsedQuery": "ctf_manager.teams.aggregate([{\"$unwind\":{\"path\":\"$flags\",\"preserveNullAndEmptyArrays\":true}},{\"$group\":{\"_id\":{\"team\":\"$name\",\"flagName\":\"$flags.name\",\"order\":\"$flags.order\"},\"found\":{\"$max\":{\"$ifNull\":[\"$flags.found\",false]}}}},{\"$project\":{\"_id\":0,\"team\":\"$_id.team\",\"flag\":\"$_id.flagName\",\"order\":\"$_id.order\",\"found\":1}}])",
+          "query": "ctf_manager.teams.aggregate([\n  // Décompose le tableau \"flags\" pour traiter chaque élément individuellement\n  { $unwind: { path: \"$flags\", preserveNullAndEmptyArrays: true } },\n  // Regroupe par équipe et projette les champs nécessaires\n  { $group: {\n    _id: { team: \"$name\", flagName: \"$flags.name\", order: \"$flags.order\" },\n    found: { $max: { $ifNull: [\"$flags.found\", false] } }\n  }},\n  // Projette les champs finaux\n  { $project: {\n    _id: 0,\n    team: \"$_id.team\",\n    flag: \"$_id.flagName\",\n    order: \"$_id.order\",\n    found: 1\n  }}\n])",
+          "queryType": "query",
+          "refId": "A"
+        }
+      ],
+      "title": "Founded flags",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "order"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "team"
+              }
+            ]
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "team",
+            "emptyValue": "false",
+            "rowField": "flag",
+            "valueField": "found"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mongodb-datasource",
+        "uid": "fdpk144yojr40e"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": ""
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.2.0-72125",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mongodb-datasource",
+            "uid": "fdpk144yojr40e"
+          },
+          "parsedQuery": "ctf_manager.teams.aggregate([{\"$unwind\":{\"path\":\"$flags\",\"preserveNullAndEmptyArrays\":true}},{\"$match\":{\"flags.found\":true}},{\"$group\":{\"_id\":{\"team\":\"$name\",\"flagName\":\"$flags.name\",\"order\":\"$flags.order\",\"found_at\":\"$flags.found_at\",\"points\":\"$flags.points\"},\"found\":{\"$first\":\"$flags.found\"}}},{\"$project\":{\"_id\":0,\"team\":\"$_id.team\",\"flag\":\"$_id.flagName\",\"order\":\"$_id.order\",\"found\":1,\"found_at\":\"$_id.found_at\",\"points\":\"$_id.points\"}}])",
+          "query": "ctf_manager.teams.aggregate([\n  // Décompose le tableau \"flags\" pour traiter chaque élément individuellement\n  { $unwind: { path: \"$flags\", preserveNullAndEmptyArrays: true } },\n  // Filtre pour ne garder que les flags trouvés\n  { $match: { \"flags.found\": true } },\n  // Regroupe par équipe et projette les champs nécessaires\n  { $group: {\n    _id: {\n      team: \"$name\",\n      flagName: \"$flags.name\",\n      order: \"$flags.order\",\n      found_at: \"$flags.found_at\",\n      points: \"$flags.points\"\n    },\n    found: { $first: \"$flags.found\" }\n  }},\n  // Projette les champs finaux\n  { $project: {\n    _id: 0,\n    team: \"$_id.team\",\n    flag: \"$_id.flagName\",\n    order: \"$_id.order\",\n    found: 1,\n    found_at: \"$_id.found_at\",\n    points: \"$_id.points\"\n  }}\n])",
+          "queryType": "query",
+          "refId": "A"
+        }
+      ],
+      "title": "Events",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "found_at"
+              }
+            ]
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "found_at",
+                "flag",
+                "order",
+                "points",
+                "team"
+              ]
+            }
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "dddd [at] H:mm:ss",
+            "timeField": "found_at",
+            "timezone": "Europe/Paris",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "flag": 1,
+              "found_at": 3,
+              "order": 2,
+              "points": 4,
+              "team": 0
+            },
+            "renameByName": {
+              "flag": "Flag",
+              "found_at": "Moment",
+              "order": "Ordonnancement",
+              "points": "Points gagnés",
+              "team": "Team"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-mongodb-datasource",
+          "uid": "fdpk144yojr40e"
+        },
+        "definition": "Query: ctf_manager.teams.find(\n  {},\n  { _id: 0, name: 1 }\n)",
+        "description": "Name of the team",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Team name",
+        "multi": true,
+        "name": "team_name",
+        "options": [],
+        "query": {
+          "parsedQuery": "ctf_manager.teams.find({}, {\"_id\":0,\"name\":1})",
+          "query": "ctf_manager.teams.find(\n  {},\n  { _id: 0, name: 1 }\n)",
+          "queryType": "query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "timezone": "browser",
+  "title": "Team",
+  "uid": "bdpkdgo6nuqdca",
+  "version": 28,
+  "weekStart": "monday"
+}
