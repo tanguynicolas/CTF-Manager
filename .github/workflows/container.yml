@@ -30,7 +30,7 @@ jobs:
           file: ./Dockerfile.lb
           platforms: linux/amd64,linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ctf-manager-api:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ctf-manager-lb:latest
 
       - name: Build and push API image
         uses: docker/build-push-action@v3
