@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from .database import init as init_db
-from .config import database_settings
+from .config import database_settings, kafka_settings
 from .organization.router import router as organization_router
 from .players.router import router as players_router
 
@@ -24,7 +24,9 @@ def alive():
 @app.get("/info")
 def info():
     return{
-        "Database URL": database_settings.url
+        "Database DB name": database_settings.db_name,
+        "Kafka enablement": kafka_settings.enable,
+        "Kafka topic name": kafka_settings.topic
     }
 
 app.include_router(organization_router, prefix="/team", tags=["organization"])
